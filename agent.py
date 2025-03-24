@@ -1,5 +1,5 @@
 import streamlit as st
-import ollama
+import requests  # To send HTTP requests to your backend API
 
 # App Title and Layout
 st.set_page_config(page_title="AgentX - Your AI Assistant", layout="wide")
@@ -27,22 +27,26 @@ if user_input:
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):  # Show loading indicator
             try:
-                # Get response from ollama API
-                response = ollama.chat(model="llama3:latest", messages=st.session_state["messages"])
+                # API Endpoint of the Flask backend (replace with your actual API URL)
+                api_url = "http://<your-public-ip>:5000/chat"  # Replace with your actual public IP/hostname
 
-                # Debugging: Print the entire response object to check its structure
-                st.write(response)  # Remove this line once you identify the structure
+                # Send the message to the Flask API
+                response = requests.post(
+                    api_url, json={"message": user_input}
+                )
 
-                # Check if the response contains the expected structure
-                if "message" in response and "content" in response["message"]:
-                    reply = response["message"]["content"]
+                # Check if the request was successful
+                if response.status_code == 200:
+                    # Extract the response from the API
+                    reply = response.json().get("response", "Sorry, I couldn't get a response.")
                 else:
-                    reply = "⚠️ Error: Unexpected response structure. Please try again later."
-            
+                    reply = f"⚠️ Error: Unable to generate response. Status Code: {response.status_code}"
+
             except Exception as e:
-                # Catch and display any errors in the response
+                # Handle errors during the API call
                 reply = f"⚠️ Error: Unable to generate response. Details: {e}"
 
+        # Display the AI response
         st.markdown(reply)
 
     # Add AI response to chat history
