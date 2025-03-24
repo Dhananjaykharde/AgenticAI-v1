@@ -27,10 +27,17 @@ if user_input:
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):  # Show loading indicator
             try:
-response = ollama.chat(model="llama3:latest", messages=st.session_state["messages"])
-reply = response["message"]["content"]
+                # Use the correct model name and check the response structure
+                response = ollama.chat(model="llama3:latest", messages=st.session_state["messages"])
+                
+                # Debugging: print the whole response to check its structure
+                st.write(response)  # Remove this line after checking
+
+                # Extract the content of the response
+                reply = response["message"]["content"]
             except Exception as e:
-                reply = "⚠️ Error: Unable to generate response."
+                # Provide detailed error information
+                reply = f"⚠️ Error: Unable to generate response. Details: {e}"
         
         st.markdown(reply)
 
