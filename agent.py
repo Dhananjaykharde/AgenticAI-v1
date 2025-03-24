@@ -27,18 +27,22 @@ if user_input:
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):  # Show loading indicator
             try:
-                # Use the correct model name and check the response structure
+                # Get response from ollama API
                 response = ollama.chat(model="llama3:latest", messages=st.session_state["messages"])
-                
-                # Debugging: print the whole response to check its structure
-                st.write(response)  # Remove this line after checking
 
-                # Extract the content of the response
-                reply = response["message"]["content"]
+                # Debugging: Print the entire response object to check its structure
+                st.write(response)  # Remove this line once you identify the structure
+
+                # Check if the response contains the expected structure
+                if "message" in response and "content" in response["message"]:
+                    reply = response["message"]["content"]
+                else:
+                    reply = "⚠️ Error: Unexpected response structure. Please try again later."
+            
             except Exception as e:
-                # Provide detailed error information
+                # Catch and display any errors in the response
                 reply = f"⚠️ Error: Unable to generate response. Details: {e}"
-        
+
         st.markdown(reply)
 
     # Add AI response to chat history
