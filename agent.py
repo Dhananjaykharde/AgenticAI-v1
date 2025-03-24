@@ -27,8 +27,8 @@ if user_input:
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):  # Show loading indicator
             try:
-                response = ollama.chat(model="llama3", messages=st.session_state["messages"])
-                reply = response["message"]["content"]
+response = ollama.chat(model="llama3:latest", messages=st.session_state["messages"])
+reply = response["message"]["content"]
             except Exception as e:
                 reply = "⚠️ Error: Unable to generate response."
         
